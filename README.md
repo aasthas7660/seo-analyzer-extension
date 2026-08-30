@@ -56,7 +56,9 @@ seo-analyzer-extension/
 - Chrome Extension Manifest V3
 
 ## Screenshots
-<img width="471" height="744" alt="image" src="https://github.com/user-attachments/assets/59a3c21d-3bd0-4e2b-a2a2-683cccfaee65" />
+<img width="472" height="155" alt="image" src="https://github.com/user-attachments/assets/bd22063c-8e6e-457e-ba15-8f3241061f54" />
+<img width="471" height="744" alt="image" src="https://github.com/user-attachments/assets/9ecd7757-f6ad-4c18-a55d-6569525ee60f" />
+
 
 
 ## Contributing
