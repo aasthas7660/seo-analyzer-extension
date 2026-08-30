@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>SEO Analyzer</h1>
+      <p class="subtitle">Full on-page & technical SEO scan</p>
+    </header>
+
+    <button id="analyzeBtn">Analyze This Page</button>
+
+    <div id="loading" class="hidden">Scanning page...</div>
+
+    <div id="results" class="hidden">
+
+      <!-- Overall score -->
+      <div class="score-circle">
+        <span id="scoreValue">0</span>
+        <span class="score-label">/100</span>
+      </div>
+
+      <!-- Section tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="onpage">On-Page</button>
+        <button class="tab-btn" data-tab="technical">Technical</button>
+        <button class="tab-btn" data-tab="recommendations">Fixes</button>
+        <button class="tab-btn" data-tab="ai">AI Suggestions</button>
+      </div>
+
+      <div id="tab-onpage" class="tab-content active">
+        <ul id="onPageList"></ul>
+      </div>
+
+      <div id="tab-technical" class="tab-content">
+        <ul id="technicalList"></ul>
+      </div>
+
+      <div id="tab-recommendations" class="tab-content">
+        <ul id="recommendationsList"></ul>
+      </div>
+
+      <div id="tab-ai" class="tab-content">
+        <button id="aiBtn">Get AI Suggestions</button>
+        <div id="aiLoading" class="hidden">Thinking...</div>
+        <div id="aiOutput"></div>
+      </div>
+
+    </div>
+
+    <div id="errorMsg" class="hidden"></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

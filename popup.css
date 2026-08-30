@@ -1,0 +1,152 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  width: 380px;
+  max-height: 550px;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.container { padding: 16px; }
+
+header { margin-bottom: 12px; }
+header h1 { font-size: 18px; color: #2563eb; }
+.subtitle { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+#analyzeBtn, #aiBtn {
+  width: 100%;
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+#analyzeBtn:hover, #aiBtn:hover { background: #1d4ed8; }
+
+.hidden { display: none !important; }
+
+#loading, #aiLoading {
+  text-align: center;
+  padding: 16px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+#results { margin-top: 16px; }
+
+/* Score circle */
+.score-circle {
+  text-align: center;
+  margin-bottom: 16px;
+}
+#scoreValue { font-size: 36px; font-weight: 700; color: #2563eb; }
+.score-label { font-size: 14px; color: #94a3b8; }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.tab-btn {
+  flex: 1;
+  padding: 8px 4px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+}
+.tab-btn.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Check list items */
+ul { list-style: none; }
+
+li.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 13px;
+}
+li.check-item:last-child { border-bottom: none; }
+
+.icon-pass { color: #16a34a; font-weight: 700; }
+.icon-warning { color: #d97706; font-weight: 700; }
+.icon-fail { color: #dc2626; font-weight: 700; }
+
+.check-text strong { display: block; }
+.check-text span { color: #64748b; font-size: 12px; }
+
+/* Recommendations list */
+li.rec-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 13px;
+}
+li.rec-item:last-child { border-bottom: none; }
+.rec-severity {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+  text-transform: uppercase;
+}
+.rec-severity.issue { background: #fee2e2; color: #b91c1c; }
+.rec-severity.warning { background: #fef3c7; color: #92400e; }
+
+/* AI output */
+#aiOutput {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.ai-suggestion-list {
+  list-style: none;
+  padding: 0;
+}
+
+.ai-suggestion-item {
+  padding: 10px 0 10px 22px;
+  border-bottom: 1px solid #e2e8f0;
+  position: relative;
+}
+.ai-suggestion-item:last-child { border-bottom: none; }
+
+.ai-suggestion-item::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.ai-suggestion-item strong {
+  color: #1e293b;
+}
+
+#errorMsg {
+  margin-top: 12px;
+  padding: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 6px;
+  font-size: 12px;
+}
