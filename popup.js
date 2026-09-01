@@ -11,15 +11,53 @@ const technicalList = document.getElementById('technicalList');
 const recommendationsList = document.getElementById('recommendationsList');
 
 // ============================================================
+// Ripple click effect for buttons (purely visual)
+// ============================================================
+function addRippleEffect(button) {
+  button.addEventListener('click', (e) => {
+    const rect = button.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    const size = Math.max(rect.width, rect.height);
+    ripple.className = 'ripple';
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    button.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  });
+}
+
+addRippleEffect(analyzeBtn);
+addRippleEffect(document.getElementById('aiBtn'));
+
+// ============================================================
 // Tab switching (On-Page / Technical / Fixes / AI Suggestions)
 // ============================================================
+// Create the sliding underline element once
+const tabsContainer = document.querySelector('.tabs');
+const tabIndicator = document.createElement('div');
+tabIndicator.className = 'tab-indicator';
+tabsContainer.appendChild(tabIndicator);
+
+function moveTabIndicator(btn) {
+  tabIndicator.style.left = btn.offsetLeft + 'px';
+  tabIndicator.style.width = btn.offsetWidth + 'px';
+}
+
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    moveTabIndicator(btn);
   });
+});
+
+// Position the indicator under the first tab once the popup opens
+window.addEventListener('load', () => {
+  const firstTab = document.querySelector('.tab-btn.active');
+  if (firstTab) moveTabIndicator(firstTab);
 });
 
 // ============================================================
@@ -32,8 +70,14 @@ async function runAnalysis() {
   errorEl.classList.add('hidden');
   loading.classList.remove('hidden');
 
+  const scanDot = document.getElementById('scanDot');
+  const scanUrl = document.getElementById('scanUrl');
+  scanDot.classList.add('live');
+  scanUrl.textContent = 'scanning...';
+
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    scanUrl.textContent = tab.url ? new URL(tab.url).hostname : 'unknown';
 
     if (!tab.url || tab.url.startsWith('chrome://')) {
       throw new Error("This page can't be analyzed (browser system pages are protected).");
@@ -52,7 +96,7 @@ async function runAnalysis() {
         window.lastChecks = allChecks;
 
     const score = calculateScore(allChecks);
-    scoreValueEl.textContent = score;
+    animateScore(score);
 
     renderChecks(onPageList, onPageChecks);
     renderChecks(technicalList, technicalChecks);
@@ -62,6 +106,7 @@ async function runAnalysis() {
 
     loading.classList.add('hidden');
     resultsEl.classList.remove('hidden');
+    scanDot.classList.remove('live');
 
   } catch (err) {
     loading.classList.add('hidden');
@@ -332,7 +377,7 @@ function renderChecks(listEl, checks) {
 
   checks.forEach(check => {
     const li = document.createElement('li');
-    li.className = 'check-item';
+    li.className = 'check-item sev-' + check.severity;
     li.innerHTML = `
       <span class="${classMap[check.severity]}">${iconMap[check.severity]}</span>
       <span class="check-text">
@@ -497,4 +542,40 @@ function renderAISuggestions(text) {
 
   aiOutput.innerHTML = '';
   aiOutput.appendChild(ul);
+}
+
+// ============================================================
+// Animate the score ring filling in + the number counting up
+// ============================================================
+function animateScore(targetScore) {
+  const ringFill = document.getElementById('scoreRingFill');
+  const circumference = 327; // must match the CSS stroke-dasharray value
+  
+  
+  // Color: red under 50, amber 50-79, green 80+
+    // Color: soft coral under 50, soft amber 50-79, soft teal 80+
+    // Color: soft coral under 50, soft amber 50-79, soft teal 80+
+  let color = '#e38b95';
+  if (targetScore >= 80) color = '#5fbfae';
+  else if (targetScore >= 50) color = '#d99a3d';
+  ringFill.style.stroke = color;
+
+  const offset = circumference - (circumference * targetScore) / 100;
+  ringFill.style.strokeDashoffset = offset;
+
+  // Count up the number from 0 to targetScore
+  let current = 0;
+  const duration = 700; // ms
+  const stepTime = 16;
+  const steps = duration / stepTime;
+  const increment = targetScore / steps;
+
+  const counter = setInterval(() => {
+    current += increment;
+    if (current >= targetScore) {
+      current = targetScore;
+      clearInterval(counter);
+    }
+    scoreValueEl.textContent = Math.round(current);
+  }, stepTime);
 }
