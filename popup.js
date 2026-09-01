@@ -106,12 +106,14 @@ async function runAnalysis() {
 
     loading.classList.add('hidden');
     resultsEl.classList.remove('hidden');
-    scanDot.classList.remove('live');
 
   } catch (err) {
     loading.classList.add('hidden');
     errorEl.textContent = err.message || 'Something went wrong.';
     errorEl.classList.remove('hidden');
+    scanUrl.textContent = 'error';
+  } finally {
+    scanDot.classList.remove('live');
   }
 }
 
@@ -561,7 +563,10 @@ function animateScore(targetScore) {
   ringFill.style.stroke = color;
 
   const offset = circumference - (circumference * targetScore) / 100;
-  ringFill.style.strokeDashoffset = offset;
+  ringFill.style.strokeDashoffset = circumference;
+  requestAnimationFrame(() => {
+    ringFill.style.strokeDashoffset = offset;
+  });
 
   // Count up the number from 0 to targetScore
   let current = 0;
