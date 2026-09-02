@@ -2,7 +2,7 @@
 
 :root {
   --ink: #5b5270;
-  --muted: #9089a3;
+  --muted: #625a75;
   --base: #eae6f5;
   --shadow-dark: #c9c2dc;
   --shadow-light: #ffffff;
@@ -13,9 +13,9 @@
   --btn-bg-hover: #4a3f65;
   --pass: #5fbfae;
   --pass-bg: #dff2ee;
-  --warn: #d99a3d;
+  --warn: #805500;
   --warn-bg: #f7ecd9;
-  --fail: #e38b95;
+  --fail: #9c3545;
   --fail-bg: #f9e3e6;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   --sans: "Century Gothic", "Segoe UI Rounded", Futura, "Trebuchet MS", sans-serif;
