@@ -7,9 +7,10 @@
 <body>
   <div class="container">
 
-    <div class="scanbar" role="status">
+    <div class="scanbar">
       <span class="scan-dot" id="scanDot"></span>
       <span class="scan-url" id="scanUrl">idle</span>
+      <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">🌙</button>
     </div>
 
     <header>
@@ -45,11 +46,14 @@
         </div>
       </div>
 
+      <button id="downloadBtn" class="secondary-btn">⬇ Download Report</button>
+
       <div class="tabs">
         <button class="tab-btn active" data-tab="onpage">On-Page</button>
         <button class="tab-btn" data-tab="technical">Technical</button>
         <button class="tab-btn" data-tab="recommendations">Fixes</button>
-        <button class="tab-btn" data-tab="ai">AI Suggestions</button>
+        <button class="tab-btn" data-tab="ai">AI</button>
+        <button class="tab-btn" data-tab="history">History</button>
       </div>
 
       <div id="tab-onpage" class="tab-content active">
@@ -71,6 +75,11 @@
           <span>Thinking...</span>
         </div>
         <div id="aiOutput"></div>
+      </div>
+
+      <div id="tab-history" class="tab-content">
+        <ul id="historyList"></ul>
+        <button id="clearHistoryBtn" class="secondary-btn">Clear History</button>
       </div>
 
     </div>

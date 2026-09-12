@@ -9,7 +9,133 @@ const scoreValueEl = document.getElementById('scoreValue');
 const onPageList = document.getElementById('onPageList');
 const technicalList = document.getElementById('technicalList');
 const recommendationsList = document.getElementById('recommendationsList');
+// ============================================================
+// Dark / light mode toggle (persisted via chrome.storage.local)
+// ============================================================
+const themeToggle = document.getElementById('themeToggle');
+const downloadBtn = document.getElementById('downloadBtn');
+// ============================================================
+// SCAN HISTORY - stores last 10 scans in chrome.storage.local
+// ============================================================
+const MAX_HISTORY = 10;
 
+function saveToHistory(url, score) {
+  chrome.storage.local.get(['scanHistory'], (result) => {
+    const history = result.scanHistory || [];
+    const hostname = (() => { try { return new URL(url).hostname; } catch { return url; } })();
+
+    history.unshift({
+      url,
+      hostname,
+      score,
+      date: new Date().toLocaleString()
+    });
+
+    const trimmed = history.slice(0, MAX_HISTORY);
+    chrome.storage.local.set({ scanHistory: trimmed }, renderHistory);
+  });
+}
+
+function renderHistory() {
+  chrome.storage.local.get(['scanHistory'], (result) => {
+    const history = result.scanHistory || [];
+    const historyList = document.getElementById('historyList');
+    historyList.innerHTML = '';
+
+    if (history.length === 0) {
+      historyList.innerHTML = '<li class="history-empty">No scans yet.</li>';
+      return;
+    }
+
+    history.forEach(entry => {
+      const li = document.createElement('li');
+      li.className = 'history-item';
+
+      let scoreColor = '#b5567f';
+      if (entry.score >= 80) scoreColor = '#4a7fb5';
+      else if (entry.score >= 50) scoreColor = '#b5728f';
+
+      li.innerHTML = `
+        <div class="history-info">
+          <span class="history-url">${entry.hostname}</span>
+          <span class="history-date">${entry.date}</span>
+        </div>
+        <span class="history-score" style="background:${scoreColor}">${entry.score}</span>
+      `;
+      historyList.appendChild(li);
+    });
+  });
+}
+
+document.getElementById('clearHistoryBtn').addEventListener('click', () => {
+  chrome.storage.local.set({ scanHistory: [] }, renderHistory);
+});
+
+// Render whatever history exists as soon as the popup opens
+renderHistory();
+
+// ============================================================
+// Build a plain-text report and trigger a file download
+// ============================================================
+downloadBtn.addEventListener('click', () => {
+  if (!window.lastScrapedData || !window.lastChecks) {
+    alert('Run "Analyze This Page" first.');
+    return;
+  }
+
+  const data = window.lastScrapedData;
+  const checks = window.lastChecks;
+  const score = document.getElementById('scoreValue').textContent;
+  const recs = buildRecommendations(checks);
+
+  let report = `SEO ANALYSIS REPORT\n`;
+  report += `URL: ${data.url}\n`;
+  report += `Date: ${new Date().toLocaleString()}\n`;
+  report += `Overall Score: ${score}/100\n`;
+  report += `\n${'='.repeat(50)}\n\nCHECKS\n${'='.repeat(50)}\n\n`;
+
+  checks.forEach(c => {
+    const mark = c.severity === 'pass' ? '[PASS]' : c.severity === 'warning' ? '[WARN]' : '[FAIL]';
+    report += `${mark} ${c.label}\n     ${c.detail}\n\n`;
+  });
+
+  report += `${'='.repeat(50)}\n\nRECOMMENDATIONS\n${'='.repeat(50)}\n\n`;
+  if (recs.length === 0) {
+    report += 'No major issues found.\n';
+  } else {
+    recs.forEach(r => {
+      report += `[${r.severity.toUpperCase()}] ${r.label}: ${r.advice}\n\n`;
+    });
+  }
+
+  const blob = new Blob([report], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const filename = `seo-report-${new Date().toISOString().slice(0, 10)}.txt`;
+
+  chrome.downloads.download({ url, filename, saveAs: true });
+});
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeToggle.textContent = '☀️';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    themeToggle.textContent = '🌙';
+  }
+}
+
+// Load saved preference when the popup opens
+chrome.storage.local.get(['theme'], (result) => {
+  applyTheme(result.theme || 'light');
+});
+
+themeToggle.addEventListener('click', () => {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  applyTheme(newTheme);
+  chrome.storage.local.set({ theme: newTheme });
+});
 // ============================================================
 // Ripple click effect for buttons (purely visual)
 // ============================================================
@@ -97,7 +223,8 @@ async function runAnalysis() {
 
     const score = calculateScore(allChecks);
     animateScore(score);
-
+    saveToHistory(result.url, score);
+    
     renderChecks(onPageList, onPageChecks);
     renderChecks(technicalList, technicalChecks);
 
@@ -557,9 +684,10 @@ function animateScore(targetScore) {
   // Color: red under 50, amber 50-79, green 80+
     // Color: soft coral under 50, soft amber 50-79, soft teal 80+
     // Color: soft coral under 50, soft amber 50-79, soft teal 80+
-  let color = '#e38b95';
-  if (targetScore >= 80) color = '#5fbfae';
-  else if (targetScore >= 50) color = '#d99a3d';
+    // Color: soft pink under 50, soft blush 50-79, sky blue 80+
+    // Color: soft pink under 50, sky blue 50-79, sky blue 80+
+  let color = '#ffafcc';
+  if (targetScore >= 50) color = '#a2d2ff';
   ringFill.style.stroke = color;
 
   const offset = circumference - (circumference * targetScore) / 100;
