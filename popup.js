@@ -85,7 +85,7 @@ downloadBtn.addEventListener('click', () => {
 
   const data = window.lastScrapedData;
   const checks = window.lastChecks;
-  const score = document.getElementById('scoreValue').textContent;
+  const score = window.lastScore;
   const recs = buildRecommendations(checks);
 
   let report = `SEO ANALYSIS REPORT\n`;
@@ -222,9 +222,10 @@ async function runAnalysis() {
         window.lastChecks = allChecks;
 
     const score = calculateScore(allChecks);
+    window.lastScore = score;
     animateScore(score);
     saveToHistory(result.url, score);
-    
+
     renderChecks(onPageList, onPageChecks);
     renderChecks(technicalList, technicalChecks);
 
