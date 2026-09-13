@@ -88,7 +88,7 @@ seo-analyzer-extension/
    ```javascript
    const AI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE';
    ```
-   Get a free key at [aistudio.google.com](https://aistudio.google.com) — no credit card required.
+`config.js` is bundled into the extension and the key is inspectable by anyone who can load it. For local testing, use a restricted, disposable key with the narrowest available quota and permissions. Do not use an unrestricted production key in this client-side extension. Get a free key at [aistudio.google.com](https://aistudio.google.com) — no credit card required.
 3. Go to `chrome://extensions` in Chrome.
 4. Enable **Developer mode** (top-right toggle).
 5. Click **Load unpacked** and select the `seo-analyzer-extension` folder.
@@ -114,6 +114,10 @@ getAISuggestions()    →  sends scraped data + rule results to Gemini for custo
 ```
 
 `scrapePage()` runs *inside* the actual webpage via `chrome.scripting.executeScript`, scoped to the largest matching content container (`article`, `.post-body`, `[itemprop="articleBody"]`, etc.) rather than the whole page, so navigation, sidebars, and widget content don't pollute the results.
+
+### AI Suggestions Privacy
+
+The AI feature is opt-in: after analysis, click **Get AI Suggestions** in the **AI** tab to transmit the scraped page content and rule results to Google Gemini so `getAISuggestions()` can generate custom advice. With a Free Tier key, Google may use prompts and responses to improve its products; Paid Tier data-use terms differ when billing is enabled. See Google's [Gemini API billing documentation](https://ai.google.dev/gemini-api/docs/billing) and [Paid Services terms](https://ai.google.dev/gemini-api/terms#paid-services) for the applicable details. Do not scan private, confidential, sensitive, or access-controlled pages with this feature. To disable AI suggestions, do not click that button; to disable the feature entirely, remove `AI_API_KEY` from `config.js` and reload the extension. Rule-based analysis remains local and does not require the Gemini request.
 
 ---
 
@@ -153,4 +157,4 @@ A few real bugs surfaced during development and testing, each worth documenting:
 
 ## License
 
-This project was built for educational purposes as part of a college assignment.
+This project was built for educational purposes as part of a college assignment. It is unlicensed: no rights are granted to reuse, modify, or distribute this project. Contact the copyright holder for permission.
