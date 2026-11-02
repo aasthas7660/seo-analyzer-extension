@@ -8,3 +8,9 @@ config.js
 
 # Dependencies
 node_modules/
+
+# Private backend configuration
+backend/.env
+
+# Backend dependencies
+backend/node_modules/

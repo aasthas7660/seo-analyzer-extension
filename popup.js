@@ -580,6 +580,7 @@ function renderRecommendations(recommendations) {
 // ============================================================
 document.getElementById('aiBtn').addEventListener('click', getAISuggestions);
 
+
 async function getAISuggestions() {
   const aiLoading = document.getElementById('aiLoading');
   const aiOutput = document.getElementById('aiOutput');
@@ -593,27 +594,30 @@ async function getAISuggestions() {
   aiLoading.classList.remove('hidden');
 
   try {
-    const prompt = buildAIPrompt(window.lastScrapedData, window.lastChecks);
+    const prompt = buildAIPrompt(
+      window.lastScrapedData,
+      window.lastChecks
+    );
 
-        const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${AI_API_KEY}`,
+    const response = await fetch(
+      'http://localhost:3000/api/gemini',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt })
       }
     );
 
     const data = await response.json();
 
-    if (data.error) {
-      throw new Error(data.error.message || 'API error');
+    if (!response.ok) {
+      throw new Error(data.error || 'AI request failed.');
     }
 
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No suggestions returned.';
-        renderAISuggestions(text);
+    const text = data.text || 'No suggestions returned.';
+    renderAISuggestions(text);
 
   } catch (err) {
     aiOutput.textContent = 'Error: ' + err.message;
@@ -621,6 +625,7 @@ async function getAISuggestions() {
     aiLoading.classList.add('hidden');
   }
 }
+
 
 function buildAIPrompt(data, checks) {
   const failedLabels = checks

@@ -1,0 +1,23 @@
+
+{
+  "name": "seo-analyzer-backend",
+  "version": "1.0.0",
+  "description": "Backend API for the SEO Analyzer Chrome Extension",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "seo",
+    "chrome-extension",
+    "gemini",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0"
+  }
+}
