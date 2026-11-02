@@ -4,7 +4,9 @@
   "version": "1.0",
   "description": "Analyzes on-page and technical SEO for blog pages and gives a score with recommendations.",
     "permissions": ["activeTab", "scripting", "storage", "downloads"],
-  "host_permissions": ["http://localhost:3000/*"],
+  "host_permissions": [
+  "https://seo-analyser-extension.vercel.app/*"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

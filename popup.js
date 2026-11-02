@@ -600,7 +600,7 @@ async function getAISuggestions() {
     );
 
     const response = await fetch(
-      'http://localhost:3000/api/gemini',
+      'https://seo-analyser-extension.vercel.app/api/gemini',
       {
         method: 'POST',
         headers: {
