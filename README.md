@@ -60,17 +60,23 @@ It calculates an SEO score out of 100, highlights issues using Pass / Warning / 
 ---
 ## 📸 Screenshots
 
-### Extension Interface
-![SEO Analyzer Home](screenshots/01-home.png)
+### 🏠 Extension Home
+![Home](screenshots/home.png)
 
-### Technical SEO Analysis
-![Technical SEO Analysis](screenshots/02-technical-seo.png)
+### 📄 On-Page SEO Analysis
+![On-Page Analysis](screenshots/on-page.png)
 
-### SEO Recommendations
-![SEO Fixes](screenshots/03-seo-fixes.png)
+### ⚙️ Technical SEO Analysis
+![Technical Analysis](screenshots/technical-page.png)
 
-### AI-Powered Suggestions
-![AI Suggestions](screenshots/04-ai-suggestions.png)
+### 🛠️ SEO Recommendations
+![SEO Fixes](screenshots/fixes-page.png)
+
+### 🤖 AI-Powered Suggestions
+![AI Suggestions](screenshots/ai-suggestions.png)
+
+### 🌙 Dark Mode
+![Dark Mode](screenshots/dark-mode.png)
 
 ## 🔄 How It Works
 
