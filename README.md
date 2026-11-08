@@ -1,160 +1,133 @@
-# SEO Analyzer — Chrome Extension
+SEO Analyzer — Chrome Extension
+Analyze blog-page SEO, understand issues, and get actionable recommendations without leaving the page.
 
-A Chrome extension (Manifest V3) that scans a blog post for on-page and technical SEO issues, scores it out of 100, and generates plain-English fixes plus AI-powered suggestions — all without leaving the page you're reading.
+SEO Analyzer is a Chrome extension built with Manifest V3 that checks the on-page and technical SEO elements of a published blog post. It calculates an SEO score out of 100, highlights issues with Pass / Warning / Fail statuses, and provides practical recommendations. An optional AI feature uses Google Gemini to generate additional suggestions.
+Features
+On-Page SEO Analysis
+- Checks the page title and meta description.
+- Reviews heading structure, including H1, H2, and H3 usage.
+- Counts words in the detected article content.
+- Identifies frequently used keywords, with Unicode-aware support for English and Hindi (Devanagari).
+- Checks image alt-text coverage.
+- Counts internal and external links.
+Technical SEO Analysis
+- Checks for a canonical URL.
+- Detects a noindex robots directive.
+- Checks whether the page uses HTTPS.
+- Checks for a viewport meta tag.
+- Detects Schema.org structured data (JSON-LD).
+- Checks Open Graph metadata.
+Score & Recommendations
+- Calculates a weighted SEO score from 0 to 100.
+- Displays Pass, Warning, and Fail results for individual checks.
+- Converts failed and warning checks into plain-language recommendations.
+AI-Powered Suggestions
+- Offers optional, page-specific suggestions using the Google Gemini API.
+- Sends a focused prompt containing page metadata and analysis results to the backend.
+- Keeps the Gemini API key on the backend rather than in the browser extension.
+Reports & Preferences
+- Downloads the analysis report as a .txt file.
+- Stores the last 10 scans using chrome.storage.local.
+- Includes light and dark themes.
+How It Works
+1. Click Analyze This Page in the extension popup.
+2. The extension uses chrome.scripting.executeScript to inspect the active page.
+3. It looks for a likely article container, such as article, .post-body, or [itemprop="articleBody"], and uses the best matching content area for analysis.
+4. Rule-based checks evaluate on-page and technical SEO factors.
+5. The extension calculates the overall score and creates recommendations.
+6. If you choose Get AI Suggestions, the extension sends selected page metadata and rule results to the backend, which requests suggestions from Google Gemini.
+The standard SEO scan runs locally in the extension. The optional AI request uses the backend service.
+Tech Stack
+Technology	Usage
+HTML	Extension popup structure
+CSS	Popup styling and light/dark themes
+Vanilla JavaScript	Page analysis, scoring, recommendations, and UI logic
+Chrome Extension Manifest V3	Browser extension platform
+Chrome APIs	chrome.scripting, chrome.storage, and chrome.downloads
+Node.js	Backend runtime
+Express	Backend API
+Google Gemini API	AI-generated SEO suggestions
+dotenv	Backend environment configuration
+express-rate-limit	Limits AI endpoint requests
+Vercel	Backend deployment
 
-Built as a college project to explore browser extension development, DOM scraping, rule-based scoring systems, and LLM API integration.
 
----
-
-## Features
-
-**On-Page SEO**
-- Title tag length and presence
-- Meta description length and presence
-- Heading structure (H1 uniqueness, H2/H3 usage)
-- Word count
-- Top keyword frequency (Unicode-aware — supports English and Hindi/Devanagari)
-- Image alt-text coverage
-- Internal/external link counts
-
-**Technical SEO**
-- Canonical tag
-- Robots meta tag (noindex detection)
-- HTTPS
-- Viewport / mobile-friendliness
-- Schema.org structured data (JSON-LD)
-- Open Graph tags
-
-**Reporting**
-- Weighted 0–100 SEO score with an animated progress ring
-- Pass / Warning / Fail severity per check
-- Plain-English recommendations tab
-- AI-generated, page-specific suggestions (via Google Gemini API)
-- Downloadable `.txt` report of the full analysis
-- Persistent scan history (last 10 pages analyzed)
-- Light and dark themes
-
----
-
-## Screenshots
-
-**On-Page SEO tab**
-![On-Page tab](<Screenshot 2026-09-13 145622.png>)
-
-**Technical SEO tab**
-![Technical tab](<Screenshot 2026-09-13 145637.png>)
-
-**Fixes / Recommendations tab**
-![Fixes tab](<Screenshot 2026-09-13 145655.png>)
-
-**AI Suggestions tab**
-![AI Suggestions tab](<Screenshot 2026-09-13 145714.png>)
-
-**Dark mode**
-![Dark mode](<Screenshot 2026-09-13 145759.png>)
-
----
-
-## Tech Stack
-
-- **JavaScript (vanilla)**, HTML, CSS — no frameworks or build step
-- **Chrome Extension Manifest V3** — `chrome.scripting`, `chrome.storage.local`, `chrome.downloads`
-- **Google Gemini API** (`gemini-3.6-flash`) for AI-generated suggestions
-
----
-
-## Project Structure
-
-```
+Project Structure
 seo-analyzer-extension/
-├── manifest.json          # Extension config and permissions
-├── popup.html              # Popup UI structure
-├── popup.css                # Styling (pastel/neomorphic theme, light + dark mode)
-├── popup.js                  # All logic: scraping, scoring, recommendations, AI, history
-├── config.js                 # Local-only file holding your real Gemini API key (gitignored)
-├── config.example.js         # Safe placeholder template for config.js
-└── icons/
-    ├── icon16.png
-    ├── icon48.png
-    └── icon128.png
-```
+├── backend/
+│   ├── .env.example
+│   ├── package.json
+│   └── server.js
+├── icons/
+│   ├── icon16.png
+│   ├── icon48.png
+│   └── icon128.png
+├── manifest.json
+├── popup.css
+├── popup.html
+├── popup.js
+└── README.md
+Secret files such as backend/.env and local configuration files are intentionally excluded from version control.
 
----
-
-## Setup
-
+Installation: Chrome Extension
 1. Clone or download this repository.
-2. Copy `config.example.js` to `config.js` and add your own Gemini API key:
-   ```javascript
-   const AI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE';
-   ```
-`config.js` is bundled into the extension and the key is inspectable by anyone who can load it. For local testing, use a restricted, disposable key with the narrowest available quota and permissions. Do not use an unrestricted production key in this client-side extension. Get a free key at [aistudio.google.com](https://aistudio.google.com) — no credit card required.
-3. Go to `chrome://extensions` in Chrome.
-4. Enable **Developer mode** (top-right toggle).
-5. Click **Load unpacked** and select the `seo-analyzer-extension` folder.
-6. Open any blog post, click the extension icon, and click **Analyze This Page**.
-
----
-
-## Architecture
-
-The extension follows a simple pipeline:
-
-```
-scrapePage()          →  reads the DOM (title, meta, headings, images, links, schema, etc.)
-      ↓
-analyzeOnPage()
-analyzeTechnical()    →  applies rule-based checks, assigns pass/warning/fail severity
-      ↓
-calculateScore()      →  weights all checks into a single 0-100 score
-      ↓
-buildRecommendations() →  converts non-passing checks into plain-English advice
-      ↓
-getAISuggestions()    →  sends scraped data + rule results to Gemini for custom advice
-```
-
-`scrapePage()` runs *inside* the actual webpage via `chrome.scripting.executeScript`, scoped to the largest matching content container (`article`, `.post-body`, `[itemprop="articleBody"]`, etc.) rather than the whole page, so navigation, sidebars, and widget content don't pollute the results.
-
-### AI Suggestions Privacy
-
-The AI feature is opt-in: after analysis, click **Get AI Suggestions** in the **AI** tab to transmit the scraped page content and rule results to Google Gemini so `getAISuggestions()` can generate custom advice. Data-use terms depend on the project's billing state and the user's region, not solely on the API key tier. Under unpaid usage, Google may use prompts and responses to improve its products, and human reviewers may process inputs and outputs. Paid data-use terms apply to users in the EEA, Switzerland, and the United Kingdom even when using unpaid quota. See Google's [Gemini API billing documentation](https://ai.google.dev/gemini-api/docs/billing) and [Paid Services terms](https://ai.google.dev/gemini-api/terms#paid-services) for the applicable details. Do not scan private, confidential, sensitive, or access-controlled pages with this feature. To disable AI suggestions, do not click that button; to disable the feature entirely, remove `AI_API_KEY` from `config.js` and reload the extension. Rule-based analysis remains local and does not require the Gemini request.
-
----
-
-## Notable Challenges & Fixes
-
-A few real bugs surfaced during development and testing, each worth documenting:
-
-1. **Editor/preview pages produce garbage data.** Testing on `draft.blogger.com`'s editor UI (rather than the published post) returned nonsense results, since the editor is a JavaScript app, not the actual blog content. Fix: only analyze live, published URLs.
-
-2. **`querySelector` grabs the first match, not the right one.** Sidebar "Popular Posts" widgets on Blogger sometimes reused the same CSS classes as the real article body, and the first match in the HTML wasn't always the actual post. Fix: check *all* matching elements and keep whichever has the most text — the real article is reliably the longest block.
-
-3. **`[a-z]` regex silently drops non-English text.** The original word-counting regex only matched Latin letters, so Hindi blog posts scored near-zero word counts. Fix: switched to Unicode-aware `\p{L}` (any letter, any script) with the `u` flag.
-
-4. **Devanagari combining marks aren't part of `\p{L}`.** Hindi vowel signs (matras) are a separate Unicode category (`\p{M}`), so words were getting chopped apart mid-word. Fix: matched `[\p{L}\p{M}]+` to keep whole words intact.
-
----
-
-## Known Limitations
-
-- **API key exposure**: `config.js` keeps the Gemini key out of version control, but since this is a client-side-only extension, the key is technically readable via DevTools by anyone who has the extension loaded. A production version would proxy AI calls through a backend server.
-- **Theme-dependent heading detection**: some blog themes (e.g. certain Blogger templates) use `<h3>` for post titles instead of `<h1>`, which the H1 check will always flag — this is a theme convention issue, not a bug.
-- **Word-count threshold is English-centric**: the "300+ words" guideline is a general SEO rule of thumb and may not apply equally across languages or content types.
-- **Non-article pages**: pages with no detectable article container (e.g. app dashboards, chat interfaces) fall back to scanning the whole page, which can produce misleading results. The extension displays a warning banner in this case.
-
----
-
-## Future Improvements
-
-- Backend proxy for the AI API key (removes client-side exposure entirely)
-- Broken internal link checker (`fetch()` each link, flag 404s)
-- Readability scoring (Flesch-Kincaid or similar)
-- Sitemap/robots.txt file fetching, not just the on-page robots meta tag
-- Multi-page/site-wide crawling and average scoring
-- Competitor comparison mode (analyze two URLs side by side)
-
----
-
-## License
-
-This project was built for educational purposes as part of a college assignment. It is unlicensed: no rights are granted to reuse, modify, or distribute this project. Contact the copyright holder for permission.
+2. Open Google Chrome and visit chrome://extensions.
+3. Turn on Developer mode.
+4. Select Load unpacked.
+5. Choose the project folder containing manifest.json.
+6. Open a published blog post.
+7. Click the SEO Analyzer extension icon and select Analyze This Page.
+The extension is designed for published blog content. Results on dashboards, editors, or pages without a detectable article area may be less accurate.
+Backend Setup
+The backend keeps the Gemini API key outside the extension.
+1. Open a terminal in the backend directory.
+2. Install the dependencies:
+   npm install
+3. Create a .env file using .env.example as a template.
+4. Add your Gemini API key to .env:
+   GEMINI_API_KEY=your_gemini_api_key
+   GEMINI_MODEL=gemini-3.5-flash-lite
+   PORT=3000
+5. Start the backend:
+   npm start
+The local health-check endpoint is available at http://localhost:3000/.
+Using a Different Backend URL
+The extension currently sends AI requests to the deployed backend endpoint configured in popup.js:
+https://seo-analyser-extension.vercel.app/api/gemini
+If you want to use a locally running or separately deployed backend, update the endpoint in popup.js. For local development, also add the local backend origin to host_permissions in manifest.json, then reload the unpacked extension.
+Backend API
+Health Check
+GET /
+Returns a message confirming that the API is running.
+Generate AI Suggestions
+POST /api/gemini
+Content-Type: application/json
+Example request:
+{
+  "prompt": "Review these blog SEO results and suggest improvements."
+}
+The backend validates the prompt, applies request rate limiting, calls the Gemini API, and returns the generated text.
+Privacy Notes
+- The rule-based SEO scan runs in the extension.
+- AI suggestions are optional. Page information is sent to the backend only when Get AI Suggestions is selected.
+- The AI prompt is built from selected page information, including the title, meta description, word count, top keywords, heading counts, and detected SEO issues.
+- The Gemini API key is stored as a backend environment variable, not in the extension's JavaScript.
+- Avoid using the AI feature on private, confidential, sensitive, or access-controlled pages.
+Review Google's current Gemini API terms and data-use policies before sending any content to the service.
+Known Limitations
+- The extension is intended for published blog posts, not general website auditing.
+- Some blog themes use non-standard heading structures, which can affect heading checks.
+- The word-count guideline is a general SEO reference and may not suit every language or content type.
+- Pages without a recognizable article container may fall back to scanning a broader section of the page, which can affect accuracy.
+- The SEO score is a rule-based estimate and should be treated as guidance, not a search-engine ranking prediction.
+Future Improvements
+- Broken-link detection.
+- Readability analysis.
+- Sitemap and robots.txt checks.
+- Multi-page website crawling.
+- Competitor SEO comparison.
+License
+This project was developed for educational purposes as a college project. No license is currently provided for reuse, modification, or redistribution. Please contact the project owner for permission.
+<p align="center">
+  Made with care for better blog SEO.
+</p>
