@@ -58,6 +58,19 @@ It calculates an SEO score out of 100, highlights issues using Pass / Warning / 
 - Supports light and dark themes.
 
 ---
+## 📸 Screenshots
+
+### Extension Interface
+![SEO Analyzer Home](screenshots/01-home.png)
+
+### Technical SEO Analysis
+![Technical SEO Analysis](screenshots/02-technical-seo.png)
+
+### SEO Recommendations
+![SEO Fixes](screenshots/03-seo-fixes.png)
+
+### AI-Powered Suggestions
+![AI Suggestions](screenshots/04-ai-suggestions.png)
 
 ## 🔄 How It Works
 
