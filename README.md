@@ -1,5 +1,12 @@
 
 # 🔍 SEO Analyzer — Chrome Extension
+<p align="left">
+  <img src="https://img.shields.io/badge/JavaScript-ES6+-yellow?logo=javascript" />
+  <img src="https://img.shields.io/badge/Chrome-Extension-green?logo=googlechrome" />
+  <img src="https://img.shields.io/badge/Manifest-V3-blue" />
+  <img src="https://img.shields.io/badge/Backend-Node.js%20%7C%20Express.js-brightgreen?logo=nodedotjs" />
+  <img src="https://img.shields.io/badge/AI-Google%20Gemini-8E75B2?logo=googlegemini" />
+</p>
 
 **Analyze blog-page SEO, identify issues, and get actionable recommendations without leaving your browser.**
 
